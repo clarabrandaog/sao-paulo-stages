@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>São Paulo's Stages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a newspaper graphics desk, clear and calm, the finding as the title.
+   IDEA: a theatre programme's seating chart laid over the city: where the houses are.
+   PICTURE: the city's 96 districts as a large choropleth, venues as small dots on top.
+   COLOUR and TYPE: white ground, one red ramp (curtain velvet) for counts, ink dots; Archivo.
+   LAYOUT: title and key figures, then map with a side panel that follows the selection. */
+:root{color-scheme:light dark;
+  --bg:light-dark(#ffffff,#141112);--ink:light-dark(#1b1516,#f3ecea);--muted:light-dark(#6b6163,#a99fa1);
+  --line:light-dark(#e6e0df,#332c2e);--zero:light-dark(#efebea,#252022);--panel:light-dark(#faf7f6,#1c1819);
+  --r1:light-dark(#fbd3cc,#4f1f22);--r2:light-dark(#f4a093,#7f2b2c);--r3:light-dark(#e5655a,#b8413b);
+  --r4:light-dark(#c23434,#e5735f);--r5:light-dark(#7e1424,#ffb3a3);--accent:light-dark(#c23434,#e5735f)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,48px) max(5vw,16px);max-width:1320px;margin:0 auto}
+h1{font-size:clamp(30px,4.4vw,48px);line-height:1.05;font-weight:800;margin:0 0 14px;text-wrap:balance;max-width:20ch}
+.lede{max-width:68ch;margin:0;color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:28px;border-top:1px solid var(--line);padding-top:18px}
+.stat b{display:block;font-size:clamp(24px,3vw,34px);font-weight:800;line-height:1.1}
+.stat span{color:var(--muted);font-size:14px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px}
+button{font:inherit;font-size:15px;color:var(--ink);background:none;border:0;cursor:pointer;border-radius:999px;min-height:40px;padding:0 16px}
+button:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.ghost{border:1px solid var(--line)}
+.check{display:inline-flex;align-items:center;gap:8px;font-size:15px;min-height:40px;padding:0 6px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--ink)}
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:start}
+.fig{position:relative;height:clamp(480px,78vh,820px);border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg)}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.district{stroke:var(--bg);cursor:pointer;transition:opacity .2s}
+.district.dim{opacity:.35}
+.district.sel{stroke:var(--ink)}
+.venue{fill:var(--ink);stroke:var(--bg);cursor:pointer}
+.venue.hl{fill:var(--accent)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);padding:8px 11px;border-radius:5px;font-size:14px;line-height:1.35;max-width:240px;opacity:0;transition:opacity .12s;z-index:2}
+.tip b{display:block;font-size:15px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:12px;font-size:14px;color:var(--muted)}
+.legend .sw{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend i{width:16px;height:12px;border-radius:2px;display:inline-block}
+.legend .dot{width:9px;height:9px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 1.5px var(--bg)}
+.panel{background:var(--panel);border-radius:6px;padding:20px 20px 24px}
+.panel h2{font-size:24px;line-height:1.15;margin:0 0 2px}
+.panel h3{font-size:15px;margin:22px 0 8px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.big b{font-size:30px;font-weight:800;display:block;line-height:1.1}
+.big span{font-size:14px;color:var(--muted)}
+.row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 3.2em;gap:10px;align-items:center;width:100%;text-align:left;padding:0 6px;min-height:34px;border-radius:4px;font-size:14px}
+.row:hover{background:var(--line)}
+.row .bar{height:10px;background:var(--r4);border-radius:0 3px 3px 0}
+.row em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums}
+.row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.own .bar{background:var(--muted)}
+ul.venues{list-style:none;margin:0;padding:0;font-size:14px}
+ul.venues li{padding:6px 0;border-bottom:1px solid var(--line);cursor:default}
+ul.venues li small{color:var(--muted)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+.about{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;border-top:1px solid var(--line)}
+.about h2{font-size:17px;margin:0 0 6px}.about p{margin:0 0 10px;font-size:15px}
+a{color:inherit}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.about{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.fig{height:520px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="band">
+  <h1>Four districts hold 44% of São Paulo's theatre rooms</h1>
+  <p class="lede">São Paulo is the hub of Brazil's musical theatre: an economic impact study by SBTM found that the city's 28 musical productions of 2018 generated R$1.01 billion and 12,824 jobs. Yet its stages are packed into a few central districts around Avenida Paulista and the old downtown, while most of the outer districts have none. This map crosses the city's official count of theatre rooms per district with the venues the OpenStreetMap community has placed on the map, to show where the city's stages are and where the record of them is thin.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<main class="band" style="padding-top:0">
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Colour districts by">
+      <button id="m-rooms" aria-pressed="true">Theatre rooms</button>
+      <button id="m-seats" aria-pressed="false">Seats</button>
+    </div>
+    <label class="check"><input type="checkbox" id="show-v" checked> Show venues</label>
+    <button class="ghost" id="reset">Whole city</button>
+  </div>
+  <div class="layout">
+    <div>
+      <div class="fig" id="fig"><svg id="map" role="img" aria-label="Map of São Paulo's 96 districts coloured by theatre rooms, with theatre venues as dots"></svg><div class="tip" id="tip"></div></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+</main>
+
+<section class="band about">
+  <div><h2>About the data</h2>
+    <p>District counts of theatre rooms and seats are from 2017, the latest year the city publishes per district as a table, from <a href="https://prefeitura.sp.gov.br/licenciamento/w/desenvolvimento_urbano/dados_estatisticos/info_cidade/cultura/260233">Infocidade</a> (Prefeitura de São Paulo, SMUL/Geoinfo, sourced from the Secretaria Municipal de Cultura and the Guia da Folha). A building with several stages counts once per stage.</p></div>
+  <div><h2>Venues</h2>
+    <p>Venue points are every place tagged as a theatre on <a href="https://www.openstreetmap.org/">OpenStreetMap</a> inside the city, retrieved in November 2026 through the Overpass API. Unnamed points, a buffet, a samba school, circus tents, university lecture rooms and duplicates were removed, leaving 85 venues. OpenStreetMap is edited by volunteers, so it is incomplete: some major houses are missing.</p></div>
+  <div><h2>Shapes and method</h2>
+    <p>District boundaries are from <a href="https://geosampa.prefeitura.sp.gov.br/">GeoSampa</a>, via <a href="https://github.com/codigourbano/distritos-sp">codigourbano/distritos-sp</a>, simplified in mapshaper and stored as TopoJSON. Each venue is assigned to the district that contains it. Built with D3 by Clara Brandão, Parsons MFA Design and Technology.</p></div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+{
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = d3.format(',');
+const METRICS = {
+  rooms: {label: 'Theatre rooms', unit: 'rooms', breaks: [1, 2, 5, 10, 20], names: ['None', '1', '2–4', '5–9', '10–19', '20 or more']},
+  seats: {label: 'Seats', unit: 'seats', breaks: [1, 500, 1000, 2500, 5000], names: ['None', '1–499', '500–999', '1,000–2,499', '2,500–4,999', '5,000 or more']}
+};
+const FILLS = ['var(--zero)', 'var(--r1)', 'var(--r2)', 'var(--r3)', 'var(--r4)', 'var(--r5)'];
+let metric = 'rooms', selected = null, showV = true, k = 1;
+
+const svg = d3.select('#map'), fig = document.getElementById('fig'), tip = document.getElementById('tip');
+const root = svg.append('g'), gD = root.append('g'), gV = root.append('g');
+const projection = d3.geoMercator(), path = d3.geoPath(projection);
+
+Promise.all([d3.json('data/districts.topo.json'), d3.json('data/venues.json')]).then(([topo, venues]) => {
+  const districts = topojson.feature(topo, topo.objects.districts).features;
+  const byId = new Map(districts.map(f => [f.properties.id, f]));
+  const vByD = d3.group(venues, v => v.district_id);
+  const P = f => f.properties;
+  const tot = d3.sum(districts, f => P(f).rooms), seats = d3.sum(districts, f => P(f).seats);
+  const none = districts.filter(f => !P(f).rooms).length;
+  const top4 = d3.sum(districts.slice().sort((a, b) => P(b).rooms - P(a).rooms).slice(0, 4), f => P(f).rooms);
+
+  document.getElementById('stats').innerHTML = [
+    [fmt(tot), 'theatre rooms in the city (2017)'], [fmt(seats), 'seats across those rooms'],
+    [`${none} of ${districts.length}`, 'districts with no theatre room'], [venues.length, 'venues mapped on OpenStreetMap']
+  ].map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
+  console.assert(Math.round(100 * top4 / tot) === 44);
+
+  const cls = f => { const v = P(f)[metric]; return d3.bisectRight(METRICS[metric].breaks, v); };
+
+  const dPaths = gD.selectAll('path').data(districts).join('path').attr('class', 'district')
+    .on('pointermove', (e, f) => showTip(e, `<b>${esc(P(f).name)}</b>${fmt(P(f).rooms)} rooms · ${fmt(P(f).seats)} seats<br>${(vByD.get(P(f).id) || []).length} venues mapped`))
+    .on('pointerleave', hideTip)
+    .on('click', (e, f) => { e.stopPropagation(); select(P(f).id, true); });
+  const vDots = gV.selectAll('circle').data(venues).join('circle').attr('class', 'venue')
+    .on('pointermove', (e, v) => showTip(e, `<b>${esc(v.name)}</b>${esc(v.district)}${v.capacity ? ' · ' + fmt(v.capacity) + ' seats' : ''}`))
+    .on('pointerleave', hideTip)
+    .on('click', (e, v) => { e.stopPropagation(); select(v.district_id, true); });
+
+  const zoom = d3.zoom().scaleExtent([1, 16]).on('zoom', e => {
+    k = e.transform.k; root.attr('transform', e.transform); restyle();
+  });
+  svg.call(zoom).on('click', () => select(null, true));
+
+  function restyle() {
+    dPaths.attr('stroke-width', d => (selected === P(d).id ? 2 : 0.6) / k);
+    vDots.attr('r', 4 * Math.pow(k, -0.75)).attr('stroke-width', 1.2 / k);
+  }
+  function size() {
+    const W = fig.clientWidth, H = fig.clientHeight, pad = Math.min(W, H) * 0.04;
+    projection.fitExtent([[pad, pad], [W - pad, H - pad]], {type: 'FeatureCollection', features: districts});
+    dPaths.attr('d', path);
+    vDots.attr('cx', v => projection([v.lon, v.lat])[0]).attr('cy', v => projection([v.lon, v.lat])[1]);
+    zoom.extent([[0, 0], [W, H]]).translateExtent([[0, 0], [W, H]]);
+    if (selected) zoomTo(selected, false); else svg.call(zoom.transform, d3.zoomIdentity);
+  }
+  function zoomTo(id, animate) {
+    const W = fig.clientWidth, H = fig.clientHeight;
+    let t = d3.zoomIdentity;
+    if (id) {
+      const [[x0, y0], [x1, y1]] = path.bounds(byId.get(id));
+      const s = Math.min(16, 0.6 / Math.max((x1 - x0) / W, (y1 - y0) / H));
+      t = d3.zoomIdentity.translate(W / 2, H / 2).scale(s).translate(-(x0 + x1) / 2, -(y0 + y1) / 2);
+    }
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (animate && !reduce ? svg.transition().duration(650) : svg).call(zoom.transform, t);
+  }
+  function paint() {
+    dPaths.attr('fill', f => FILLS[cls(f)]);
+    const m = METRICS[metric];
+    document.getElementById('legend').innerHTML = `<strong style="color:var(--ink)">${esc(m.label)} per district</strong>` +
+      m.names.map((n, i) => `<span class="sw"><i style="background:${FILLS[i]}"></i>${esc(n)}</span>`).join('') +
+      `<span class="sw"><i class="dot"></i>Venue on OpenStreetMap</span>`;
+    svg.attr('aria-label', `Map of São Paulo's 96 districts coloured by ${m.label.toLowerCase()}, with theatre venues as dots`);
+    renderPanel();
+  }
+  function select(id, animate) {
+    selected = id;
+    dPaths.classed('sel', d => P(d).id === id).classed('dim', d => id && P(d).id !== id);
+    dPaths.filter(d => P(d).id === id).raise();
+    zoomTo(id, animate); restyle(); renderPanel();
+  }
+  function renderPanel() {
+    const el = document.getElementById('panel'), m = METRICS[metric];
+    if (!selected) {
+      const ranked = districts.slice().sort((a, b) => P(b)[metric] - P(a)[metric]).slice(0, 10);
+      const max = P(ranked[0])[metric];
+      el.innerHTML = `<h2>Districts with the most ${esc(m.unit)}</h2><p class="sub">Hover the map for details, or pick a district to zoom in.</p>` +
+        ranked.map(f => `<button class="row" data-id="${esc(P(f).id)}"><span class="nm">${esc(P(f).name)}</span><span class="bar" style="width:${(100 * P(f)[metric] / max).toFixed(1)}%"></span><em>${fmt(P(f)[metric])}</em></button>`).join('') +
+        `<p class="note">The other ${districts.length - 10} districts hold ${fmt(d3.sum(districts, f => P(f)[metric]) - d3.sum(ranked, f => P(f)[metric]))} ${esc(m.unit)} between them.</p>`;
+      el.querySelectorAll('.row').forEach(b => b.addEventListener('click', () => select(b.dataset.id, true)));
+      return;
+    }
+    const p = P(byId.get(selected)), vs = (vByD.get(selected) || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+    const own = [['Private', p.private], ['State', p.state], ['Municipal', p.municipal]], omax = Math.max(1, ...own.map(o => o[1]));
+    let note = '';
+    if (p.rooms && !vs.length) note = `The city counts ${p.rooms} room${p.rooms > 1 ? 's' : ''} here, but none are on OpenStreetMap yet.`;
+    else if (!p.rooms && vs.length) note = `The 2017 count lists no rooms here; these venues were mapped later or are not counted by the city.`;
+    else if (!p.rooms) note = 'No theatre rooms in the 2017 count and no venues mapped.';
+    el.innerHTML = `<h2>${esc(p.name)}</h2><p class="sub">Subprefecture of ${esc(p.subprefecture)}</p>
+      <div class="big"><div><b>${fmt(p.rooms)}</b><span>theatre rooms</span></div><div><b>${fmt(p.seats)}</b><span>seats</span></div></div>
+      ${p.rooms ? `<h3>Who runs the rooms</h3>` + own.map(([n, v]) => `<div class="row own" style="cursor:default"><span>${n}</span><span class="bar" style="width:${(100 * v / omax).toFixed(1)}%"></span><em>${v}</em></div>`).join('') : ''}
+      <h3>Venues on OpenStreetMap (${vs.length})</h3>
+      ${vs.length ? `<ul class="venues">${vs.map((v, i) => `<li data-i="${venues.indexOf(v)}">${esc(v.name)}${v.capacity ? ` <small>${fmt(v.capacity)} seats</small>` : ''}</li>`).join('')}</ul>` : ''}
+      ${note ? `<p class="note">${esc(note)}</p>` : ''}
+      <p style="margin-top:18px"><button class="ghost" id="back">Back to whole city</button></p>`;
+    el.querySelector('#back').addEventListener('click', () => select(null, true));
+    el.querySelectorAll('li').forEach(li => {
+      li.addEventListener('pointerenter', () => vDots.classed('hl', (d, i) => i === +li.dataset.i));
+      li.addEventListener('pointerleave', () => vDots.classed('hl', false));
+    });
+  }
+  function showTip(e, html) {
+    const r = fig.getBoundingClientRect(); tip.innerHTML = html; tip.style.opacity = 1;
+    let x = e.clientX - r.left + 14, y = e.clientY - r.top + 14;
+    if (x + tip.offsetWidth > r.width - 8) x = e.clientX - r.left - tip.offsetWidth - 14;
+    if (y + tip.offsetHeight > r.height - 8) y = e.clientY - r.top - tip.offsetHeight - 14;
+    tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+  }
+  function hideTip() { tip.style.opacity = 0; }
+
+  const setMetric = m => { metric = m; document.getElementById('m-rooms').setAttribute('aria-pressed', m === 'rooms'); document.getElementById('m-seats').setAttribute('aria-pressed', m === 'seats'); paint(); };
+  document.getElementById('m-rooms').addEventListener('click', () => setMetric('rooms'));
+  document.getElementById('m-seats').addEventListener('click', () => setMetric('seats'));
+  document.getElementById('show-v').addEventListener('change', e => { showV = e.target.checked; gV.attr('display', showV ? null : 'none'); });
+  document.getElementById('reset').addEventListener('click', () => select(null, true));
+  addEventListener('keydown', e => { if (e.key === 'Escape') select(null, true); });
+
+  paint(); size();
+  const ro = new ResizeObserver(size); ro.observe(fig);
+}).catch(err => { document.getElementById('panel').textContent = 'The map data could not load: ' + err.message; });
+}
+</script>
+</body>
+</html>

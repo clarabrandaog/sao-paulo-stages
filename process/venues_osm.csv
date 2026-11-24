@@ -1,0 +1,86 @@
+osm_id,name,lat,lon,district_id,district,operator,capacity,wikidata
+n598678147,Teatro Oficina,-23.555193,-46.641248,66,República,,,Q7691937
+n598678152,Teatro Imprensa,-23.555407,-46.639796,66,República,,,
+n1111596873,Teatro Vivo,-23.619865,-46.698911,35,Itaim Bibi,Vivo,,
+n1784841566,Teatro Bradesco,-23.526174,-46.680433,6,Barra Funda,,,Q7691896
+n1939916141,Teatro Raul Cortez,-23.558021,-46.652279,7,Bela Vista,,,
+n2021790252,Teatro Grande Otelo,-23.531324,-46.643886,69,Santa Cecília,,,
+n2344650705,Teatro Fernando Torres,-23.542648,-46.569413,80,Tatuapé,,,
+n2404415223,Teatro Brasileiro de Comédia,-23.553871,-46.643082,66,República,,,Q7691898
+n2405707924,Teatro Ruth Escobar,-23.559765,-46.646825,7,Bela Vista,,,Q7691953
+n2405709329,Teatro Nissi,-23.55754,-46.641124,7,Bela Vista,,,
+n2406537863,Teatro de Arena,-23.546815,-46.646239,66,República,,,
+n2428249757,SESC Pompeia,-23.526044,-46.683555,60,Perdizes,,,
+n2795194426,Teatro Dias Gomes,-23.580214,-46.640221,90,Vila Mariana,,500,
+n2803936127,Teatro Experimental Anhembi Morumbi,-23.550385,-46.611056,53,Moóca,Universidade Anhembi Morumbi,,
+n3527358838,Teatro Augusta,-23.553226,-46.654734,26,Consolação,,,Q18486782
+n4342903801,Centro da Terra,-23.540377,-46.679899,60,Perdizes,,,
+n4399758753,Teatro Vento Forte,-23.587597,-46.686892,35,Itaim Bibi,,,
+n4554341001,Teatro Procópio Ferreira,-23.565352,-46.667613,45,Jardim Paulista,,,Q7691945
+n4684119664,Teatro Paulo Autran,-23.568099,-46.697912,62,Pinheiros,,,
+n4896101919,Teatro CETIP,-23.561169,-46.694235,62,Pinheiros,,,
+n4915696467,Teatro Renato Russo,-23.710777,-46.704522,23,Cidade Dutra,,450,
+n4960582114,Teatro Clementina de Jesus,-23.479978,-46.762299,95,São Domingos,,,
+n4995181821,Comedians,-23.554306,-46.656042,26,Consolação,,,
+n5133694189,Teatro Luiz Gonzaga,-23.49532,-46.412393,84,Vila Curuçá,,,
+n5208917023,Teatro Central da Medicina,-23.555239,-46.669741,45,Jardim Paulista,,,
+n5261873326,Teatro Commune,-23.549152,-46.652923,26,Consolação,Commune Coletivo Teatral,,
+n5733257916,Teatro Porto Seguro,-23.530198,-46.645411,69,Santa Cecília,,,
+n5747516555,Teatro Raposo Shopping,-23.588455,-46.751049,94,Vila Sônia,,,
+n6773056381,Teatro da Universidade Católica,-23.538486,-46.671361,60,Perdizes,,,Q7691974
+n6800869068,Teatro Ozualdo Candeias,-23.513342,-46.389272,36,Itaim Paulista,,450,
+n9201253238,Teatro Gazeta,-23.565265,-46.651352,7,Bela Vista,,700,Q28680358
+n9706142976,Teatro Morumbi Shopping,-23.624708,-46.699966,71,Santo Amaro,,,
+n9711875806,Teatro Opus Frei Caneca,-23.55433,-46.652111,7,Bela Vista,,,
+n9848265974,Teatro Sesc Avenida Paulista,-23.570798,-46.645744,90,Vila Mariana,,,
+n9928808102,Teatro Jaraguá,-23.548479,-46.64319,66,República,,,
+n10046395236,Teatro Italia Bandeirante,-23.545383,-46.643675,66,República,,,
+n10076325183,Teatro das Artes,-23.573045,-46.695337,62,Pinheiros,,,
+n10076338228,Teatro Renaissance,-23.558649,-46.661881,45,Jardim Paulista,,,
+n10120410685,Teatro Sesc Consolação,-23.54607,-46.649911,26,Consolação,,,
+n10123070331,Teatro SESI-SP,-23.563392,-46.654505,45,Jardim Paulista,,,
+n10185199289,Teatro Unimed,-23.559312,-46.661077,45,Jardim Paulista,,,
+n10201144101,Teatro Anne Frank,-23.578248,-46.693978,62,Pinheiros,,,
+n10201144102,Teatro Arthur Rubinstein,-23.578592,-46.693791,62,Pinheiros,,,
+n11061150483,Agora Teatro,-23.561484,-46.645232,7,Bela Vista,,,
+n11142231997,Auditório Celso Neves,-23.561839,-46.615413,14,Cambuci,,,
+n11774635983,Teatro Gamaro,-23.551735,-46.610273,53,Moóca,,,
+n12921842233,Estação Motiva Cultural,-23.533677,-46.640237,69,Santa Cecília,Fundação Osesp,,
+n13722979101,Instituto Brincante,-23.554289,-46.6921,62,Pinheiros,,,
+n14075338919,Arena B3,-23.545666,-46.634266,78,Sé,,,
+n14075350230,Teatro Claro Mais,-23.595624,-46.686633,35,Itaim Bibi,,,
+n14075404306,Teatro Sabesp,-23.553853,-46.652939,7,Bela Vista,,,
+n14079330890,BTG Pactual Hall,-23.651041,-46.721092,71,Santo Amaro,,,
+n14080448121,Teatro UOL,-23.542635,-46.65747,26,Consolação,,,
+n14080469697,Teatro Moise Safra,-23.51911,-46.662281,6,Barra Funda,,,
+n14080480893,Teatro Cacilda Becker,-23.528336,-46.694629,48,Lapa,,,
+n14080506981,Teatro Youtube,-23.559218,-46.660453,45,Jardim Paulista,,,
+w46927931,Teatro Municipal de São Paulo,-23.545269,-46.638644,66,República,Prefeitura de São Paulo,,Q2297627
+w51414740,Sala São Paulo,-23.53424,-46.639835,69,Santa Cecília,Orquestra Sinfônica do Estado de São Paulo,1498,Q3243994
+w125450896,Auditório Ibirapuera,-23.585587,-46.656587,32,Moema,,,Q758948
+w153921987,Teatro Laboratório,-23.557942,-46.724232,12,Butantã,,,
+w158966871,Centro Cultural Camargo Guarnieri,-23.557947,-46.720921,12,Butantã,,,
+w183312939,Teatro Popular João Caetano,-23.59684,-46.643102,90,Vila Mariana,Secretaria Municipal de Cultura,,
+w199120998,Teatro Maria Della Costa,-23.554691,-46.649316,7,Bela Vista,,,Q7691928
+w199121000,Teatro Sérgio Cardoso,-23.556627,-46.644984,7,Bela Vista,,,
+w204071644,Teatro Cultura Artística,-23.549172,-46.645887,66,República,,,Q10378822
+w211128348,Humboldt Theater,-23.687402,-46.708339,79,Socorro,,,
+w217333507,Teatro Renault,-23.554224,-46.638217,66,República,,,Q7691938
+w421318926,Conservatório Dramatico e Musical de São Paulo,-23.544382,-46.637187,66,República,,,
+w421345213,Teatro dos Arcos,-23.555321,-46.638621,66,República,,,
+w422428838,Teatro Paulo Eiró,-23.646685,-46.702059,71,Santo Amaro,,,Q30938489
+w423508935,Teatro Bibi Ferreira,-23.558102,-46.640923,7,Bela Vista,Tchesco Produções e Eventos,300,
+w431414755,Teatro Liberdade,-23.561698,-46.637403,49,Liberdade,,,
+w495358986,Teatro Hebe,-23.623081,-46.727572,83,Vila Andrade,,,
+w520075786,Teatro do Colégio Santa Cruz,-23.552221,-46.717036,2,Alto de Pinheiros,,,
+w521406037,Teatro Consa,-23.600297,-46.664229,32,Moema,,,
+w618170338,Teatro Dom Bosco,-23.489517,-46.633719,70,Santana,,,
+w985858681,Teatro Alfredo Mesquita,-23.513056,-46.628411,70,Santana,,,
+w1031641386,Theatro São Pedro,-23.532391,-46.65378,69,Santa Cecília,Secretaria de Cultura do Estado de São Paulo,,Q7691959
+w1074524155,Teatro Viradalata,-23.542445,-46.683465,60,Perdizes,,,
+w1227143786,Anfiteatro Aberto das Nascentes,-23.542572,-46.689549,60,Perdizes,,,
+w1258845669,Tokio Marine Hall,-23.638566,-46.720474,71,Santo Amaro,,,Q10293455
+w1298216396,Teatro Celso Furtado,-23.515921,-46.640302,70,Santana,,,
+w1376167359,Teatro Municipal da Mooca Arthur Azevedo,-23.563135,-46.596913,53,Moóca,Prefeitura de São Paulo,349,Q27916563
+w1454138041,Teatro B32,-23.589717,-46.682786,35,Itaim Bibi,,,
+r6678901,Viga,-23.55124,-46.680439,62,Pinheiros,,,
