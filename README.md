@@ -1,10 +1,10 @@
 # Where São Paulo's stages are
 
-An interactive D3 map of São Paulo's 96 districts, colored by the number of theatre rooms (or seats) in each one, with the theatre venues mapped on OpenStreetMap drawn on top.
+An interactive D3 map of São Paulo's 96 districts, colored by the number of theatre stages (or seats) in each one, with the theatre venues mapped on OpenStreetMap drawn on top.
 
 **Live page:** https://clarabrandaog.github.io/sao-paulo-stages/
 
-Four central districts (Bela Vista, República, Consolação and Santa Cecília) hold 128 of the city's 294 theatre rooms, about 44%. 42 of the 96 districts have none.
+Four central districts (Bela Vista, República, Consolação and Santa Cecília) hold 128 of the city's 294 theatre stages, about 44%. 42 of the 96 districts have none.
 
 ## Data
 

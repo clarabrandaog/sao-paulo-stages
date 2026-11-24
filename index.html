@@ -11,7 +11,7 @@
    IDEA: a theatre programme's seating chart laid over the city: where the houses are.
    PICTURE: the city's 96 districts as a large choropleth, venues as small dots on top.
    COLOUR and TYPE: white ground, one red ramp (curtain velvet) for counts, ink dots; Archivo.
-   LAYOUT: title and key figures, then map with a side panel that follows the selection. */
+   LAYOUT: title and key figures, a toolbar, then map with a side panel that follows the selection. */
 :root{color-scheme:light dark;
   --bg:light-dark(#ffffff,#141112);--ink:light-dark(#1b1516,#f3ecea);--muted:light-dark(#6b6163,#a99fa1);
   --line:light-dark(#e6e0df,#332c2e);--zero:light-dark(#efebea,#252022);--panel:light-dark(#faf7f6,#1c1819);
@@ -24,83 +24,135 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,syste
 h1{font-size:clamp(30px,4.4vw,48px);line-height:1.05;font-weight:800;margin:0 0 14px;text-wrap:balance;max-width:20ch}
 .lede{max-width:68ch;margin:0;color:var(--ink)}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:28px;border-top:1px solid var(--line);padding-top:18px}
-.stat b{display:block;font-size:clamp(24px,3vw,34px);font-weight:800;line-height:1.1}
+.stat b{display:block;font-size:clamp(24px,3vw,34px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat span{color:var(--muted);font-size:14px}
-.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px}
-button{font:inherit;font-size:15px;color:var(--ink);background:none;border:0;cursor:pointer;border-radius:999px;min-height:40px;padding:0 16px}
+
+/* Toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:6px;margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.toolbar .lbl{font-size:13px;color:var(--muted);padding-left:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--bg)}
+button{font:inherit;font-size:15px;color:var(--ink);background:none;border:0;cursor:pointer;border-radius:999px;min-height:40px;padding:0 16px;transition:background-color .15s,color .15s,opacity .15s}
 button:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
-.ghost{border:1px solid var(--line)}
-.check{display:inline-flex;align-items:center;gap:8px;font-size:15px;min-height:40px;padding:0 6px;cursor:pointer}
-.check input{width:18px;height:18px;accent-color:var(--ink)}
+.seg button[aria-pressed=false]:hover{background:var(--line)}
+.ghost{border:1px solid var(--line);background:var(--bg)}
+.ghost:hover:not(:disabled){background:var(--line)}
+.ghost:disabled{opacity:.4;cursor:default}
+.check{display:inline-flex;align-items:center;gap:8px;font-size:15px;min-height:40px;padding:0 14px;cursor:pointer;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.check input{width:16px;height:16px;margin:0;accent-color:var(--ink)}
+#reset{margin-left:auto}
+
+/* Map */
 .layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:start}
 .fig{position:relative;height:clamp(480px,78vh,820px);border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg)}
 .fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
-.district{stroke:var(--bg);cursor:pointer;transition:opacity .2s}
-.district.dim{opacity:.35}
-.district.sel{stroke:var(--ink)}
-.venue{fill:var(--ink);stroke:var(--bg);cursor:pointer}
+.district{stroke:var(--bg);cursor:pointer;transition:opacity .25s}
+.district.dim,.district.fade{opacity:.28}
+.district.sel,.district.hov{stroke:var(--ink)}
+.district.hov{filter:drop-shadow(0 1px 3px rgb(0 0 0 / .35))}
+.venue{fill:var(--ink);stroke:var(--bg);cursor:pointer;transition:opacity .25s}
+.venue.fade{opacity:.12}
 .venue.hl{fill:var(--accent)}
 .tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);padding:8px 11px;border-radius:5px;font-size:14px;line-height:1.35;max-width:240px;opacity:0;transition:opacity .12s;z-index:2}
 .tip b{display:block;font-size:15px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:12px;font-size:14px;color:var(--muted)}
 .legend .sw{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend .title{color:var(--ink);font-weight:700}
+.legend .title i{display:none}
 .legend i{width:16px;height:12px;border-radius:2px;display:inline-block}
-.legend .dot{width:9px;height:9px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 1.5px var(--bg)}
-.panel{background:var(--panel);border-radius:6px;padding:20px 20px 24px}
-.panel h2{font-size:24px;line-height:1.15;margin:0 0 2px}
-.panel h3{font-size:15px;margin:22px 0 8px}
+.legend i.dot{width:9px;height:9px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 1.5px var(--bg)}
+
+/* Side panel */
+.panel{background:var(--panel);border-radius:6px;padding:22px 20px 24px;position:sticky;top:16px}
+.panel>div:not([hidden]){animation:rise .3s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}}
+.panel h2{font-size:22px;line-height:1.15;margin:0 0 2px}
+.panel h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:24px 0 8px}
 .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
-.big{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.big b{font-size:30px;font-weight:800;display:block;line-height:1.1}
+.callout{display:flex;align-items:baseline;gap:8px;margin:12px 0 4px;padding:12px 14px;background:color-mix(in srgb,var(--accent) 9%,var(--bg));border-radius:6px;font-size:15px;line-height:1.3}
+.callout b{flex:none;font-size:30px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+#rank{display:block;overflow:visible;margin-top:4px}
+.axis text{fill:var(--muted);font-size:11px;font-family:inherit}
+.axis line{stroke:var(--line)}
+.axis .domain{display:none}
+.rrow{cursor:pointer;outline:none}
+.rrow .hit{fill:transparent;transition:fill .15s}
+.rrow:hover .hit,.rrow.on .hit{fill:var(--line)}
+.rrow:focus-visible .hit{stroke:var(--accent);stroke-width:2}
+.rrow text{font-family:inherit;font-variant-numeric:tabular-nums}
+.rrow .rk{fill:var(--muted);font-size:12px}
+.rrow .nm,.rrow .val{fill:var(--ink);font-size:14px}
+.rrow .bar{fill:var(--r2)}
+.rrow.top4 .bar{fill:var(--r4)}
+.rrow.top4 .nm{font-weight:700}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.big>div{background:var(--bg);border-radius:4px;padding:10px 12px}
+.big b{font-size:30px;font-weight:800;display:block;line-height:1.1;font-variant-numeric:tabular-nums}
 .big span{font-size:14px;color:var(--muted)}
-.row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 3.2em;gap:10px;align-items:center;width:100%;text-align:left;padding:0 6px;min-height:34px;border-radius:4px;font-size:14px}
-.row:hover{background:var(--line)}
-.row .bar{height:10px;background:var(--r4);border-radius:0 3px 3px 0}
+.row{display:grid;grid-template-columns:7em minmax(0,1fr) 3em;gap:10px;align-items:center;min-height:30px;font-size:14px}
+.row .bar{display:block;height:10px;background:var(--muted);border-radius:0 3px 3px 0}
 .row em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums}
-.row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.own .bar{background:var(--muted)}
 ul.venues{list-style:none;margin:0;padding:0;font-size:14px}
-ul.venues li{padding:6px 0;border-bottom:1px solid var(--line);cursor:default}
+ul.venues li{padding:6px 0;border-bottom:1px solid var(--line);cursor:default;transition:color .15s}
+ul.venues li:hover{color:var(--accent)}
 ul.venues li small{color:var(--muted)}
 .note{font-size:14px;color:var(--muted);margin:10px 0 0}
+
 .about{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;border-top:1px solid var(--line)}
 .about h2{font-size:17px;margin:0 0 6px}.about p{margin:0 0 10px;font-size:15px}
 a{color:inherit}
-@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.about{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.fig{height:520px}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.about{grid-template-columns:minmax(0,1fr)}.panel{position:static}}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.fig{height:520px}#reset{margin-left:0}.toolbar .lbl{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <header class="band">
-  <h1>Four districts hold 44% of São Paulo's theatre rooms</h1>
-  <p class="lede">São Paulo is the hub of Brazil's musical theatre: an economic impact study by SBTM found that the city's 28 musical productions of 2018 generated R$1.01 billion and 12,824 jobs. Yet its stages are packed into a few central districts around Avenida Paulista and the old downtown, while most of the outer districts have none. This map crosses the city's official count of theatre rooms per district with the venues the OpenStreetMap community has placed on the map, to show where the city's stages are and where the record of them is thin.</p>
+  <h1>Four districts hold 44% of São Paulo's stages</h1>
+  <p class="lede">São Paulo is the hub of Brazil's musical theatre: an economic impact study by SBTM found that the city's 28 musical productions of 2018 generated R$1.01 billion and 12,824 jobs. Yet its stages are packed into a few central districts around Avenida Paulista and the old downtown, while most of the outer districts have none. This map crosses the city's official count of theatre stages per district with the venues the OpenStreetMap community has placed on the map, to show where the city's stages are and where the record of them is thin.</p>
   <div class="stats" id="stats"></div>
 </header>
 
 <main class="band" style="padding-top:0">
-  <div class="controls">
-    <div class="seg" role="group" aria-label="Colour districts by">
-      <button id="m-rooms" aria-pressed="true">Theatre rooms</button>
+  <div class="toolbar">
+    <span class="lbl" id="m-lbl">Colour by</span>
+    <div class="seg" role="group" aria-labelledby="m-lbl">
+      <button id="m-rooms" aria-pressed="true">Stages</button>
       <button id="m-seats" aria-pressed="false">Seats</button>
     </div>
     <label class="check"><input type="checkbox" id="show-v" checked> Show venues</label>
-    <button class="ghost" id="reset">Whole city</button>
+    <button class="ghost" id="reset" disabled>Whole city</button>
   </div>
   <div class="layout">
     <div>
-      <div class="fig" id="fig"><svg id="map" role="img" aria-label="Map of São Paulo's 96 districts coloured by theatre rooms, with theatre venues as dots"></svg><div class="tip" id="tip"></div></div>
+      <div class="fig" id="fig"><svg id="map" role="img" aria-label="Map of São Paulo's 96 districts coloured by stages, with theatre venues as dots"></svg><div class="tip" id="tip"></div></div>
       <div class="legend" id="legend"></div>
     </div>
-    <aside class="panel" id="panel" aria-live="polite"></aside>
+    <aside class="panel" id="panel" aria-live="polite">
+      <div id="overview">
+        <h2 id="o-title"></h2>
+        <p class="callout" id="o-callout"><b></b><span></span></p>
+        <p class="sub">Hover a district to find it on the map; click to zoom in.</p>
+        <svg id="rank" aria-label="Ranking of districts"></svg>
+        <p class="note" id="o-note"></p>
+      </div>
+      <div id="detail" hidden>
+        <h2 id="d-name"></h2>
+        <p class="sub" id="d-sub"></p>
+        <div class="big" id="d-big"></div>
+        <div id="d-own"><h3>Who runs the stages</h3><div class="rows"></div></div>
+        <h3 id="d-vh"></h3>
+        <ul class="venues" id="d-venues"></ul>
+        <p class="note" id="d-note"></p>
+        <p style="margin-top:18px"><button class="ghost" id="back">Back to whole city</button></p>
+      </div>
+    </aside>
   </div>
 </main>
 
 <section class="band about">
   <div><h2>About the data</h2>
-    <p>District counts of theatre rooms and seats are from 2017, the latest year the city publishes per district as a table, from <a href="https://prefeitura.sp.gov.br/licenciamento/w/desenvolvimento_urbano/dados_estatisticos/info_cidade/cultura/260233">Infocidade</a> (Prefeitura de São Paulo, SMUL/Geoinfo, sourced from the Secretaria Municipal de Cultura and the Guia da Folha). A building with several stages counts once per stage.</p></div>
+    <p>District counts of theatre stages and seats are from 2017, the latest year the city publishes per district as a table, from <a href="https://prefeitura.sp.gov.br/licenciamento/w/desenvolvimento_urbano/dados_estatisticos/info_cidade/cultura/260233">Infocidade</a> (Prefeitura de São Paulo, SMUL/Geoinfo, sourced from the Secretaria Municipal de Cultura and the Guia da Folha). A building with several stages counts once per stage (the city calls them <i>salas de teatro</i>, theatre rooms).</p></div>
   <div><h2>Venues</h2>
     <p>Venue points are every place tagged as a theatre on <a href="https://www.openstreetmap.org/">OpenStreetMap</a> inside the city, retrieved in November 2026 through the Overpass API. Unnamed points, a buffet, a samba school, circus tents, university lecture rooms and duplicates were removed, leaving 85 venues. OpenStreetMap is edited by volunteers, so it is incomplete: some major houses are missing.</p></div>
   <div><h2>Shapes and method</h2>
@@ -112,38 +164,60 @@ a{color:inherit}
 <script>
 {
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt = d3.format(',');
+const fmt = d3.format(','), pct = d3.format('.0%');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const dur = ms => reduceMotion.matches ? 0 : ms;
 const METRICS = {
-  rooms: {label: 'Theatre rooms', unit: 'rooms', breaks: [1, 2, 5, 10, 20], names: ['None', '1', '2–4', '5–9', '10–19', '20 or more']},
+  rooms: {label: 'Stages', unit: 'stages', breaks: [1, 2, 5, 10, 20], names: ['None', '1', '2–4', '5–9', '10–19', '20 or more']},
   seats: {label: 'Seats', unit: 'seats', breaks: [1, 500, 1000, 2500, 5000], names: ['None', '1–499', '500–999', '1,000–2,499', '2,500–4,999', '5,000 or more']}
 };
-const FILLS = ['var(--zero)', 'var(--r1)', 'var(--r2)', 'var(--r3)', 'var(--r4)', 'var(--r5)'];
-let metric = 'rooms', selected = null, showV = true, k = 1;
+let metric = 'rooms', selected = null, hovered = null, k = 1;
+
+// The colour ramp lives in CSS (light and dark). Resolve it to real colours so D3 can interpolate fills.
+const RAMP_VARS = ['--zero', '--r1', '--r2', '--r3', '--r4', '--r5'];
+const probe = document.body.appendChild(document.createElement('span'));
+probe.style.display = 'none';
+let ramp = [];
+const readRamp = () => { ramp = RAMP_VARS.map(v => { probe.style.color = `var(${v})`; return getComputedStyle(probe).color; }); };
+const colour = () => d3.scaleThreshold().domain(METRICS[metric].breaks).range(ramp);
 
 const svg = d3.select('#map'), fig = document.getElementById('fig'), tip = document.getElementById('tip');
 const root = svg.append('g'), gD = root.append('g'), gV = root.append('g');
 const projection = d3.geoMercator(), path = d3.geoPath(projection);
 
+// Ranking chart scaffolding
+const RM = {top: 22, right: 46, left: 150}, ROW = 34, BAR = 12;
+const rankSvg = d3.select('#rank');
+const gAxis = rankSvg.append('g').attr('class', 'axis'), gRows = rankSvg.append('g');
+let rankRows = gRows.selectAll('g.rrow');
+
 Promise.all([d3.json('data/districts.topo.json'), d3.json('data/venues.json')]).then(([topo, venues]) => {
   const districts = topojson.feature(topo, topo.objects.districts).features;
-  const byId = new Map(districts.map(f => [f.properties.id, f]));
-  const vByD = d3.group(venues, v => v.district_id);
   const P = f => f.properties;
+  const byId = new Map(districts.map(f => [P(f).id, f]));
+  const vByD = d3.group(venues, v => v.district_id);
   const tot = d3.sum(districts, f => P(f).rooms), seats = d3.sum(districts, f => P(f).seats);
   const none = districts.filter(f => !P(f).rooms).length;
-  const top4 = d3.sum(districts.slice().sort((a, b) => P(b).rooms - P(a).rooms).slice(0, 4), f => P(f).rooms);
+  const ranked = m => districts.slice().sort((a, b) => d3.descending(P(a)[m], P(b)[m]) || d3.ascending(P(a).name, P(b).name));
+  console.assert(Math.round(100 * d3.sum(ranked('rooms').slice(0, 4), f => P(f).rooms) / tot) === 44);
 
-  document.getElementById('stats').innerHTML = [
-    [fmt(tot), 'theatre rooms in the city (2017)'], [fmt(seats), 'seats across those rooms'],
-    [`${none} of ${districts.length}`, 'districts with no theatre room'], [venues.length, 'venues mapped on OpenStreetMap']
-  ].map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
-  console.assert(Math.round(100 * top4 / tot) === 44);
+  // Key figures, counting up
+  const stats = d3.select('#stats').selectAll('.stat')
+    .data([
+      {v: tot, f: fmt, label: 'theatre stages in the city (2017)'},
+      {v: seats, f: fmt, label: 'seats across those stages'},
+      {v: none, f: n => `${n} of ${districts.length}`, label: 'districts with no theatre stage'},
+      {v: venues.length, f: fmt, label: 'venues mapped on OpenStreetMap'}
+    ])
+    .join(enter => { const s = enter.append('div').attr('class', 'stat'); s.append('b'); s.append('span'); return s; });
+  stats.select('span').text(d => d.label);
+  countUp(stats.select('b'), 1100);
 
-  const cls = f => { const v = P(f)[metric]; return d3.bisectRight(METRICS[metric].breaks, v); };
-
-  const dPaths = gD.selectAll('path').data(districts).join('path').attr('class', 'district')
-    .on('pointermove', (e, f) => showTip(e, `<b>${esc(P(f).name)}</b>${fmt(P(f).rooms)} rooms · ${fmt(P(f).seats)} seats<br>${(vByD.get(P(f).id) || []).length} venues mapped`))
-    .on('pointerleave', hideTip)
+  // Map layers
+  const dPaths = gD.selectAll('path').data(districts, f => P(f).id).join('path').attr('class', 'district')
+    .on('pointerenter', (e, f) => hover(P(f).id, false))
+    .on('pointermove', (e, f) => showTip(e, `<b>${esc(P(f).name)}</b>${fmt(P(f).rooms)} stages · ${fmt(P(f).seats)} seats<br>${(vByD.get(P(f).id) || []).length} venues mapped`))
+    .on('pointerleave', () => { hover(null); hideTip(); })
     .on('click', (e, f) => { e.stopPropagation(); select(P(f).id, true); });
   const vDots = gV.selectAll('circle').data(venues).join('circle').attr('class', 'venue')
     .on('pointermove', (e, v) => showTip(e, `<b>${esc(v.name)}</b>${esc(v.district)}${v.capacity ? ' · ' + fmt(v.capacity) + ' seats' : ''}`))
@@ -156,7 +230,7 @@ Promise.all([d3.json('data/districts.topo.json'), d3.json('data/venues.json')]).
   svg.call(zoom).on('click', () => select(null, true));
 
   function restyle() {
-    dPaths.attr('stroke-width', d => (selected === P(d).id ? 2 : 0.6) / k);
+    dPaths.attr('stroke-width', d => (selected === P(d).id || hovered === P(d).id ? 2 : 0.6) / k);
     vDots.attr('r', 4 * Math.pow(k, -0.75)).attr('stroke-width', 1.2 / k);
   }
   function size() {
@@ -175,54 +249,141 @@ Promise.all([d3.json('data/districts.topo.json'), d3.json('data/venues.json')]).
       const s = Math.min(16, 0.6 / Math.max((x1 - x0) / W, (y1 - y0) / H));
       t = d3.zoomIdentity.translate(W / 2, H / 2).scale(s).translate(-(x0 + x1) / 2, -(y0 + y1) / 2);
     }
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    (animate && !reduce ? svg.transition().duration(650) : svg).call(zoom.transform, t);
+    (animate && !reduceMotion.matches ? svg.transition().duration(650) : svg).call(zoom.transform, t);
   }
-  function paint() {
-    dPaths.attr('fill', f => FILLS[cls(f)]);
-    const m = METRICS[metric];
-    document.getElementById('legend').innerHTML = `<strong style="color:var(--ink)">${esc(m.label)} per district</strong>` +
-      m.names.map((n, i) => `<span class="sw"><i style="background:${FILLS[i]}"></i>${esc(n)}</span>`).join('') +
-      `<span class="sw"><i class="dot"></i>Venue on OpenStreetMap</span>`;
+
+  // Colour the map, the legend and the ranking for the current metric
+  function paint(animate) {
+    const c = colour(), m = METRICS[metric];
+    (animate && !reduceMotion.matches ? dPaths.transition('fill').duration(600) : dPaths.interrupt('fill'))
+      .attr('fill', f => c(P(f)[metric]));
+    const items = [{t: 'title', label: `${m.label} per district`},
+      ...m.names.map((n, i) => ({t: 'swatch', label: n, fill: c.range()[i]})),
+      {t: 'venue', label: 'Venue on OpenStreetMap'}];
+    const sw = d3.select('#legend').selectAll('.sw').data(items)
+      .join(enter => { const s = enter.append('span'); s.append('i'); s.append('span').attr('class', 'lb'); return s; })
+      .attr('class', d => `sw ${d.t}`);
+    sw.select('i').classed('dot', d => d.t === 'venue').style('background', d => d.fill ?? null);
+    sw.select('.lb').text(d => d.label);
     svg.attr('aria-label', `Map of São Paulo's 96 districts coloured by ${m.label.toLowerCase()}, with theatre venues as dots`);
-    renderPanel();
+    drawRanking(animate);
+    if (selected) renderDetail();
   }
+
+  // Ranking: a D3 bar chart, keyed by district so bars slide to their new rank when the metric changes
+  function drawRanking(animate) {
+    const W = rankSvg.node().parentNode.clientWidth;
+    if (!W || selected) return;
+    const m = METRICS[metric], all = ranked(metric), top = all.slice(0, 10);
+    const total = d3.sum(districts, f => P(f)[metric]);
+    const iw = W - RM.left - RM.right, ih = top.length * ROW;
+    const x = d3.scaleLinear().domain([0, P(top[0])[metric]]).nice().range([0, iw]);
+    const y = d3.scaleBand().domain(top.map(f => P(f).id)).range([0, ih]);
+    const T = animate && !reduceMotion.matches ? d3.transition('rank').duration(650).ease(d3.easeCubicInOut) : null;
+    const tr = sel => T ? sel.transition(T) : sel;
+
+    rankSvg.attr('width', W).attr('height', RM.top + ih + 4).attr('aria-label', `Top ten districts by ${m.unit}`);
+    gAxis.attr('transform', `translate(${RM.left},${RM.top})`);
+    gRows.attr('transform', `translate(${RM.left},${RM.top})`);
+    tr(gAxis).call(d3.axisTop(x).ticks(Math.max(2, Math.floor(iw / 70))).tickFormat(fmt).tickSize(-ih).tickPadding(6));
+
+    rankRows = gRows.selectAll('g.rrow').data(top, f => P(f).id).join(
+      enter => {
+        const g = enter.append('g').attr('class', 'rrow').attr('tabindex', 0).attr('role', 'button')
+          .attr('transform', f => `translate(0,${y(P(f).id) + (T ? 12 : 0)})`).style('opacity', T ? 0 : 1)
+          .on('pointerenter focus', (e, f) => hover(P(f).id, true))
+          .on('pointerleave blur', () => hover(null))
+          .on('click', (e, f) => select(P(f).id, true))
+          .on('keydown', (e, f) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(P(f).id, true); } });
+        g.append('rect').attr('class', 'hit').attr('y', 1).attr('height', ROW - 2).attr('rx', 4);
+        g.append('text').attr('class', 'rk').attr('y', ROW / 2).attr('dy', '0.35em');
+        g.append('text').attr('class', 'nm').attr('y', ROW / 2).attr('dy', '0.35em');
+        g.append('rect').attr('class', 'bar').attr('y', (ROW - BAR) / 2).attr('height', BAR).attr('width', 0);
+        g.append('text').attr('class', 'val').attr('y', ROW / 2).attr('dy', '0.35em').attr('text-anchor', 'end');
+        return g;
+      },
+      update => update,
+      exit => tr(exit).style('opacity', 0).remove()
+    );
+    rankRows.classed('top4', (f, i) => i < 4)
+      .attr('aria-label', (f, i) => `${i + 1}. ${P(f).name}, ${fmt(P(f)[metric])} ${m.unit}. Press Enter to zoom in.`);
+    rankRows.select('.hit').attr('x', -RM.left + 2).attr('width', W - 4);
+    rankRows.select('.rk').attr('x', -RM.left + 10).text((f, i) => i + 1);
+    rankRows.select('.nm').attr('x', -RM.left + 32).text(f => P(f).name);
+    rankRows.select('.val').attr('x', iw + RM.right - 8).text(f => fmt(P(f)[metric]));
+    tr(rankRows).attr('transform', f => `translate(0,${y(P(f).id)})`).style('opacity', 1);
+    tr(rankRows.select('.bar')).attr('width', f => x(P(f)[metric]));
+    rankRows.classed('on', f => P(f).id === hovered);
+
+    const share = d3.sum(top.slice(0, 4), f => P(f)[metric]) / total;
+    d3.select('#o-title').text(`Districts with the most ${m.unit}`);
+    const co = d3.select('#o-callout');
+    co.select('b').datum({v: Math.round(share * 100), f: n => n + '%'}).call(s => countUp(s, T ? 650 : 0, true));
+    co.select('span').text(`of the city's ${m.unit} are in the top four districts`);
+    d3.select('#o-note').text(`The other ${districts.length - top.length} districts hold ${fmt(total - d3.sum(top, f => P(f)[metric]))} ${m.unit} between them (${pct(1 - d3.sum(top, f => P(f)[metric]) / total)}).`);
+  }
+
+  // Hovering a ranking row (or a district) highlights that district on the map
+  function hover(id, fromList) {
+    hovered = id;
+    const focus = fromList && id && !selected;
+    dPaths.classed('hov', d => P(d).id === id).classed('fade', d => focus && P(d).id !== id);
+    vDots.classed('fade', v => focus && v.district_id !== id);
+    if (id) dPaths.filter(d => P(d).id === id).raise();
+    else if (selected) dPaths.filter(d => P(d).id === selected).raise();
+    rankRows.classed('on', f => P(f).id === id);
+    restyle();
+  }
+
   function select(id, animate) {
     selected = id;
+    hover(null);
     dPaths.classed('sel', d => P(d).id === id).classed('dim', d => id && P(d).id !== id);
     dPaths.filter(d => P(d).id === id).raise();
-    zoomTo(id, animate); restyle(); renderPanel();
+    zoomTo(id, animate); restyle();
+    d3.select('#overview').property('hidden', !!id);
+    d3.select('#detail').property('hidden', !id);
+    d3.select('#reset').property('disabled', !id);
+    if (id) renderDetail(); else drawRanking(false);
   }
-  function renderPanel() {
-    const el = document.getElementById('panel'), m = METRICS[metric];
-    if (!selected) {
-      const ranked = districts.slice().sort((a, b) => P(b)[metric] - P(a)[metric]).slice(0, 10);
-      const max = P(ranked[0])[metric];
-      el.innerHTML = `<h2>Districts with the most ${esc(m.unit)}</h2><p class="sub">Hover the map for details, or pick a district to zoom in.</p>` +
-        ranked.map(f => `<button class="row" data-id="${esc(P(f).id)}"><span class="nm">${esc(P(f).name)}</span><span class="bar" style="width:${(100 * P(f)[metric] / max).toFixed(1)}%"></span><em>${fmt(P(f)[metric])}</em></button>`).join('') +
-        `<p class="note">The other ${districts.length - 10} districts hold ${fmt(d3.sum(districts, f => P(f)[metric]) - d3.sum(ranked, f => P(f)[metric]))} ${esc(m.unit)} between them.</p>`;
-      el.querySelectorAll('.row').forEach(b => b.addEventListener('click', () => select(b.dataset.id, true)));
-      return;
-    }
+
+  // District detail, built with D3 joins
+  function renderDetail() {
     const p = P(byId.get(selected)), vs = (vByD.get(selected) || []).slice().sort((a, b) => a.name.localeCompare(b.name));
-    const own = [['Private', p.private], ['State', p.state], ['Municipal', p.municipal]], omax = Math.max(1, ...own.map(o => o[1]));
+    d3.select('#d-name').text(p.name);
+    d3.select('#d-sub').text(`Subprefecture of ${p.subprefecture}`);
+
+    const big = d3.select('#d-big').selectAll('div')
+      .data([{v: p.rooms, f: fmt, label: 'stages'}, {v: p.seats, f: fmt, label: 'seats'}])
+      .join(enter => { const d = enter.append('div'); d.append('b'); d.append('span'); return d; });
+    big.select('span').text(d => d.label);
+    countUp(big.select('b'), 700);
+
+    const own = [{n: 'Private', v: p.private}, {n: 'State', v: p.state}, {n: 'Municipal', v: p.municipal}];
+    const ox = d3.scaleLinear().domain([0, d3.max(own, d => d.v) || 1]).range([0, 100]);
+    d3.select('#d-own').property('hidden', !p.rooms);
+    const rows = d3.select('#d-own .rows').selectAll('.row').data(own)
+      .join(enter => { const r = enter.append('div').attr('class', 'row'); r.append('span'); r.append('span').append('span').attr('class', 'bar'); r.append('em'); return r; });
+    rows.select('span').text(d => d.n);
+    rows.select('em').text(d => d.v);
+    rows.select('.bar').style('width', '0%')
+      .transition().duration(dur(500)).delay((d, i) => dur(i * 70)).ease(d3.easeCubicOut)
+      .style('width', d => ox(d.v) + '%');
+
+    d3.select('#d-vh').text(`Venues on OpenStreetMap (${vs.length})`);
+    d3.select('#d-venues').selectAll('li').data(vs, v => v.osm)
+      .join(enter => { const li = enter.append('li'); li.append('span'); li.append('small'); return li; })
+      .on('pointerenter', (e, v) => vDots.classed('hl', d => d === v).filter(d => d === v).raise())
+      .on('pointerleave', () => vDots.classed('hl', false))
+      .call(li => { li.select('span').text(v => v.name); li.select('small').text(v => v.capacity ? ` ${fmt(v.capacity)} seats` : ''); });
+
     let note = '';
-    if (p.rooms && !vs.length) note = `The city counts ${p.rooms} room${p.rooms > 1 ? 's' : ''} here, but none are on OpenStreetMap yet.`;
-    else if (!p.rooms && vs.length) note = `The 2017 count lists no rooms here; these venues were mapped later or are not counted by the city.`;
-    else if (!p.rooms) note = 'No theatre rooms in the 2017 count and no venues mapped.';
-    el.innerHTML = `<h2>${esc(p.name)}</h2><p class="sub">Subprefecture of ${esc(p.subprefecture)}</p>
-      <div class="big"><div><b>${fmt(p.rooms)}</b><span>theatre rooms</span></div><div><b>${fmt(p.seats)}</b><span>seats</span></div></div>
-      ${p.rooms ? `<h3>Who runs the rooms</h3>` + own.map(([n, v]) => `<div class="row own" style="cursor:default"><span>${n}</span><span class="bar" style="width:${(100 * v / omax).toFixed(1)}%"></span><em>${v}</em></div>`).join('') : ''}
-      <h3>Venues on OpenStreetMap (${vs.length})</h3>
-      ${vs.length ? `<ul class="venues">${vs.map((v, i) => `<li data-i="${venues.indexOf(v)}">${esc(v.name)}${v.capacity ? ` <small>${fmt(v.capacity)} seats</small>` : ''}</li>`).join('')}</ul>` : ''}
-      ${note ? `<p class="note">${esc(note)}</p>` : ''}
-      <p style="margin-top:18px"><button class="ghost" id="back">Back to whole city</button></p>`;
-    el.querySelector('#back').addEventListener('click', () => select(null, true));
-    el.querySelectorAll('li').forEach(li => {
-      li.addEventListener('pointerenter', () => vDots.classed('hl', (d, i) => i === +li.dataset.i));
-      li.addEventListener('pointerleave', () => vDots.classed('hl', false));
-    });
+    if (p.rooms && !vs.length) note = `The city counts ${p.rooms} stage${p.rooms > 1 ? 's' : ''} here, but none are on OpenStreetMap yet.`;
+    else if (!p.rooms && vs.length) note = 'The 2017 count lists no stages here; these venues were mapped later or are not counted by the city.';
+    else if (!p.rooms) note = 'No theatre stages in the 2017 count and no venues mapped.';
+    d3.select('#d-note').text(note).property('hidden', !note);
   }
+
   function showTip(e, html) {
     const r = fig.getBoundingClientRect(); tip.innerHTML = html; tip.style.opacity = 1;
     let x = e.clientX - r.left + 14, y = e.clientY - r.top + 14;
@@ -232,16 +393,37 @@ Promise.all([d3.json('data/districts.topo.json'), d3.json('data/venues.json')]).
   }
   function hideTip() { tip.style.opacity = 0; }
 
-  const setMetric = m => { metric = m; document.getElementById('m-rooms').setAttribute('aria-pressed', m === 'rooms'); document.getElementById('m-seats').setAttribute('aria-pressed', m === 'seats'); paint(); };
-  document.getElementById('m-rooms').addEventListener('click', () => setMetric('rooms'));
-  document.getElementById('m-seats').addEventListener('click', () => setMetric('seats'));
-  document.getElementById('show-v').addEventListener('change', e => { showV = e.target.checked; gV.attr('display', showV ? null : 'none'); });
-  document.getElementById('reset').addEventListener('click', () => select(null, true));
-  addEventListener('keydown', e => { if (e.key === 'Escape') select(null, true); });
+  const setMetric = m => {
+    if (m === metric) return;
+    metric = m;
+    d3.select('#m-rooms').attr('aria-pressed', m === 'rooms');
+    d3.select('#m-seats').attr('aria-pressed', m === 'seats');
+    paint(true);
+  };
+  d3.select('#m-rooms').on('click', () => setMetric('rooms'));
+  d3.select('#m-seats').on('click', () => setMetric('seats'));
+  d3.select('#show-v').on('change', e => gV.transition().duration(dur(250)).attr('opacity', e.target.checked ? 1 : 0)
+    .on('start', function () { if (e.target.checked) d3.select(this).attr('display', null); })
+    .on('end', function () { if (!e.target.checked) d3.select(this).attr('display', 'none'); }));
+  d3.select('#reset').on('click', () => select(null, true));
+  d3.select('#back').on('click', () => select(null, true));
+  d3.select(window).on('keydown', e => { if (e.key === 'Escape') select(null, true); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { readRamp(); paint(false); });
 
-  paint(); size();
-  const ro = new ResizeObserver(size); ro.observe(fig);
+  readRamp(); paint(false); size();
+  new ResizeObserver(size).observe(fig);
+  let panelW = 0;
+  new ResizeObserver(([e]) => { const w = Math.round(e.contentRect.width); if (w !== panelW) { panelW = w; drawRanking(false); } })
+    .observe(document.getElementById('panel'));
 }).catch(err => { document.getElementById('panel').textContent = 'The map data could not load: ' + err.message; });
+
+// Tween a number into each element's text. With fromCurrent, start from the value it last showed.
+function countUp(sel, ms, fromCurrent) {
+  sel.interrupt().transition().duration(dur(ms)).ease(d3.easeCubicOut).tween('text', function (d) {
+    const i = d3.interpolateRound(fromCurrent ? (this._v ?? 0) : 0, d.v);
+    return t => { this._v = i(t); this.textContent = d.f(this._v); };
+  });
+}
 }
 </script>
 </body>
